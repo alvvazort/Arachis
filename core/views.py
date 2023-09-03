@@ -232,7 +232,7 @@ class CheckoutView(View):
 
 
 @login_required
-def add_to_cart(request, slug):
+def add_to_cart(request, slug, quantity=1):
     item = get_object_or_404(Item, slug=slug)
     order_item, created = OrderItem.objects.get_or_create(
         item=item,
@@ -243,20 +243,22 @@ def add_to_cart(request, slug):
     if order_qs.exists():
         order = order_qs[0]
         if order.items.filter(item__slug=item.slug).exists():
-            order_item.quantity += 1
+            order_item.quantity += quantity
             order_item.save()
-            messages.info(request, "Item qty was updated.")
+            messages.info(request, "La cantidad del producto añadido ha sido actualizado.")
             return redirect("core:order-summary")
         else:
+            order_item.quantity = quantity
             order.items.add(order_item)
-            messages.info(request, "Item was added to your cart.")
+            messages.info(request, "El producto ha sido añadido a tu carrito.")
             return redirect("core:order-summary")
     else:
         ordered_date = timezone.now()
         order = Order.objects.create(
             user=request.user, ordered_date=ordered_date)
+        order_item.quantity = quantity
         order.items.add(order_item)
-        messages.info(request, "Item was added to your cart.")
+        messages.info(request, "El producto ha sido añadido a tu carrito.")
     return redirect("core:order-summary")
 
 
@@ -345,7 +347,7 @@ class AddCouponView(View):
                 return redirect("core:checkout")
 
             except ObjectDoesNotExist:
-                messages.info(request, "You do not have an active order")
+                messages.info(self.request, "You do not have an active order")
                 return redirect("core:checkout")
 
 
