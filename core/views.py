@@ -239,6 +239,8 @@ def add_to_cart(request, slug, quantity=1):
         user=request.user,
         ordered=False
     )
+    if request.POST.get("quantity", 1):
+        quantity = int(request.POST.get("quantity", 1))
     order_qs = Order.objects.filter(user=request.user, ordered=False)
     if order_qs.exists():
         order = order_qs[0]
