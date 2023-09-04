@@ -113,9 +113,11 @@ class HomeView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            context['cart'] = order
-            
+            try:
+                order = Order.objects.get(user=self.request.user, ordered=False)
+                context['cart'] = order
+            except ObjectDoesNotExist:
+                pass
         return context
 
 
@@ -140,8 +142,11 @@ class ShopView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            context['cart'] = order
+            try:
+                order = Order.objects.get(user=self.request.user, ordered=False)
+                context['cart'] = order
+            except ObjectDoesNotExist:
+                pass
         return context
 
 
@@ -152,8 +157,11 @@ class ItemDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            context['cart'] = order
+            try:
+                order = Order.objects.get(user=self.request.user, ordered=False)
+                context['cart'] = order
+            except ObjectDoesNotExist:
+                pass
         return context
 
 
@@ -166,14 +174,23 @@ class CategoryView(View):
         category = Category.objects.get(slug=self.kwargs['slug'])
         item = Item.objects.filter(category=category, is_active=True)
         if self.request.user.is_authenticated:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            context = {
+            try:
+                order = Order.objects.get(user=self.request.user, ordered=False)
+                context = {
                 'object_list': item,
                 'category_title': category,
                 'category_description': category.description,
                 'category_image': category.image,
                 'cart': order
             }
+            except ObjectDoesNotExist:
+                context = {
+                'object_list': item,
+                'category_title': category,
+                'category_description': category.description,
+                'category_image': category.image
+            }
+            
         else:
             context = {
                 'object_list': item,
