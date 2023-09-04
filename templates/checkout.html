@@ -42,9 +42,8 @@
  
     <div class="container">
   <div class="py-5 text-center">
-    <img class="d-block mx-auto mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <h2>Checkout form</h2>
-    <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+    <h2>Checkout</h2>
+    <p class="lead">Una vez completado el pago, el pedido será tramitado por Arachis. Gracias por apoyar el mercado local y artesanal ;).</p>
   </div>
 
   <div class="row">
@@ -52,44 +51,52 @@
 
     <div class="col-md-8 order-md-1 card" >
     	
-      <h4 class="mb-3" style=" margin-top: 26px;">Billing address</h4>
+      <h4 class="mb-3" style=" margin-top: 26px;">Dirección de entrega</h4>
       <form method="POST" class="needs-validation" novalidate>
       	{% csrf_token %}
         <div class="mb-3">
-          <label for="address">Address</label>
+          <label for="address">Dirección</label>
           {{ form.street_address }}
         </div>
 
         <div class="mb-3">
-          <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
+          <label for="address2">2ª Dirección <span class="text-muted">(Opcional)</span></label>
           {{ form.apartment_address }}
         </div>
 
         <div class="row">
           <div class="col-md-5 mb-3">
-            <label for="country">Country</label>
+            <label for="country">Pais</label>
            		{{ form.country }}
             <div class="invalid-feedback">
-              Please select a valid country.
+              Por favor selecciona un pais valido.
             </div>
           </div>
           <div class="col-md-4 mb-3">
-            <label for="state">City</label>
+            <!--
+            <label for="state">Ciudad</label>
             <select class="custom-select d-block w-100" id="state" required>
-              <option value="">Choose...</option>
+              <option value="">Elige tu ciudad</option>
               <option>California</option>
               <option>Yangon</option>
 
             </select>
+            
             <div class="invalid-feedback">
-              Please provide a valid state.
+              Please provide a valid city.
+            </div>
+            -->
+            <label for="city">Ciudad</label>
+              {{ form.city }}
+            <div class="invalid-feedback">
+              Please provide a valid city.
             </div>
           </div>
           <div class="col-md-3 mb-3">
-            <label for="zip">Zip</label>
+            <label for="zip">Código postal</label>
             {{ form.zip }}
             <div class="invalid-feedback">
-              Zip code required.
+              El código postal es obligatorio.
             </div>
           </div>
         </div>
@@ -97,17 +104,18 @@
         <div class="custom-control custom-checkbox">
           <input {% if form.same_shipping_address.value %}checked{% endif %} type="checkbox" class="custom-control-input" id="same_shipping_address">
           
-          <label class="custom-control-label" for="same_shipping_address">Shipping address is the same as my billing address</label>
+          <label class="custom-control-label" for="same_shipping_address">La dirección de facturación es la misma que la de entrega</label>
         </div>
         <div class="custom-control custom-checkbox">
           <input {% if form.save_info.value %}checked{% endif %} type="checkbox" class="custom-control-input" id="save-info">
           
-          <label class="custom-control-label" for="save-info">Save this information for next time</label>
+          <label class="custom-control-label" for="save-info">Guardar esta información para la próxima vez</label>
         </div>
+        <!--
         <hr class="mb-4">
 
         <h4 class="mb-3">Payment</h4>
-
+        
         <div class="d-block my-3">
         	{% for value, name in form.fields.payment_option.choices %}
           <div class="custom-control custom-radio">
@@ -116,7 +124,8 @@
           </div>
           {% endfor %}
         </div>
-        
+        -->
+       
         <hr class="mb-4">
         <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
       </form>
@@ -127,7 +136,7 @@
   </div>
 
   <footer class="my-5 pt-5 text-muted text-center text-small">
-    <p class="mb-1">&copy; 2017-2019 Company Name</p>
+    <p class="mb-1">&copy; 2023 Arachis</p>
     <ul class="list-inline">
       <li class="list-inline-item"><a href="#">Privacy</a></li>
       <li class="list-inline-item"><a href="#">Terms</a></li>

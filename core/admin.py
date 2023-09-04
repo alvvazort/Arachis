@@ -51,6 +51,7 @@ class AddressAdmin(admin.ModelAdmin):
         'street_address',
         'apartment_address',
         'country',
+        'city',
         'zip',
         'address_type',
         'default'

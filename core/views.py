@@ -35,7 +35,7 @@ class PaymentView(View):
             return render(self.request, "payment.html", context)
         else:
             messages.warning(
-                self.request, "u have not added a billing address")
+                self.request, "No has añadido una dirección de facturación")
             return redirect("core:checkout")
 
     def post(self, *args, **kwargs):
@@ -45,7 +45,7 @@ class PaymentView(View):
         try:
             charge = stripe.Charge.create(
                 amount=amount,  # cents
-                currency="usd",
+                currency="eur",
                 source=token
             )
             # create the payment
@@ -110,13 +110,21 @@ class HomeView(ListView):
     queryset = Item.objects.filter(is_active=True)
     context_object_name = 'items'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context['cart'] = order
+            
+        return context
+
 
 class OrderSummaryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
+            order = Order.objects.get(user=self.request.user, ordered=False) 
             context = {
-                'object': order
+                'cart': order
             }
             return render(self.request, 'order_summary.html', context)
         except ObjectDoesNotExist:
@@ -129,10 +137,24 @@ class ShopView(ListView):
     paginate_by = 6
     template_name = "shop.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context['cart'] = order
+        return context
+
 
 class ItemDetailView(DetailView):
     model = Item
     template_name = "product-detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context['cart'] = order
+        return context
 
 
 # class CategoryView(DetailView):
@@ -143,12 +165,22 @@ class CategoryView(View):
     def get(self, *args, **kwargs):
         category = Category.objects.get(slug=self.kwargs['slug'])
         item = Item.objects.filter(category=category, is_active=True)
-        context = {
-            'object_list': item,
-            'category_title': category,
-            'category_description': category.description,
-            'category_image': category.image
-        }
+        if self.request.user.is_authenticated:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context = {
+                'object_list': item,
+                'category_title': category,
+                'category_description': category.description,
+                'category_image': category.image,
+                'cart': order
+            }
+        else:
+            context = {
+                'object_list': item,
+                'category_title': category,
+                'category_description': category.description,
+                'category_image': category.image
+            }
         return render(self.request, "category.html", context)
 
 
@@ -160,7 +192,7 @@ class CheckoutView(View):
             context = {
                 'form': form,
                 'couponform': CouponForm(),
-                'order': order,
+                'cart': order,
                 'DISPLAY_COUPON_FORM': True
             }
             return render(self.request, "checkout.html", context)
@@ -178,17 +210,20 @@ class CheckoutView(View):
                 street_address = form.cleaned_data.get('street_address')
                 apartment_address = form.cleaned_data.get('apartment_address')
                 country = form.cleaned_data.get('country')
+                city = form.cleaned_data.get('city')
                 zip = form.cleaned_data.get('zip')
                 # add functionality for these fields
                 # same_shipping_address = form.cleaned_data.get(
                 #     'same_shipping_address')
                 # save_info = form.cleaned_data.get('save_info')
-                payment_option = form.cleaned_data.get('payment_option')
+                # payment_option = form.cleaned_data.get('payment_option')
+
                 billing_address = BillingAddress(
                     user=self.request.user,
                     street_address=street_address,
                     apartment_address=apartment_address,
                     country=country,
+                    city=city,
                     zip=zip,
                     address_type='B'
                 )
@@ -197,14 +232,18 @@ class CheckoutView(View):
                 order.save()
 
                 # add redirect to the selected payment option
+                return redirect('core:payment', payment_option='stripe')
+                '''
                 if payment_option == 'S':
                     return redirect('core:payment', payment_option='stripe')
                 elif payment_option == 'P':
                     return redirect('core:payment', payment_option='paypal')
+                
                 else:
                     messages.warning(
                         self.request, "Invalid payment option select")
                     return redirect('core:checkout')
+                '''
         except ObjectDoesNotExist:
             messages.error(self.request, "You do not have an active order")
             return redirect("core:order-summary")
@@ -251,6 +290,7 @@ def add_to_cart(request, slug, quantity=1):
             return redirect("core:order-summary")
         else:
             order_item.quantity = quantity
+            order_item.save()
             order.items.add(order_item)
             messages.info(request, "El producto ha sido añadido a tu carrito.")
             return redirect("core:order-summary")
@@ -259,6 +299,7 @@ def add_to_cart(request, slug, quantity=1):
         order = Order.objects.create(
             user=request.user, ordered_date=ordered_date)
         order_item.quantity = quantity
+        order_item.save()
         order.items.add(order_item)
         messages.info(request, "El producto ha sido añadido a tu carrito.")
     return redirect("core:order-summary")
@@ -280,15 +321,15 @@ def remove_from_cart(request, slug):
                 ordered=False
             )[0]
             order.items.remove(order_item)
-            messages.info(request, "Item was removed from your cart.")
+            messages.info(request, "El producto ha sido eliminado de tu carrito.")
             return redirect("core:order-summary")
         else:
             # add a message saying the user dosent have an order
-            messages.info(request, "Item was not in your cart.")
+            messages.info(request, "El producto ha sido eliminado de tu carrito.")
             return redirect("core:product", slug=slug)
     else:
         # add a message saying the user dosent have an order
-        messages.info(request, "u don't have an active order.")
+        messages.info(request, "No tienes ninguna orden activa.")
         return redirect("core:product", slug=slug)
     return redirect("core:product", slug=slug)
 
@@ -313,15 +354,15 @@ def remove_single_item_from_cart(request, slug):
                 order_item.save()
             else:
                 order.items.remove(order_item)
-            messages.info(request, "This item qty was updated.")
+            messages.info(request, "La cantidad del producto ha sido actualizada.")
             return redirect("core:order-summary")
         else:
             # add a message saying the user dosent have an order
-            messages.info(request, "Item was not in your cart.")
+            messages.info(request, "El producto no estaba en tu carrito.")
             return redirect("core:product", slug=slug)
     else:
         # add a message saying the user dosent have an order
-        messages.info(request, "u don't have an active order.")
+        messages.info(request, "No tienes ninguna orden activa.")
         return redirect("core:product", slug=slug)
     return redirect("core:product", slug=slug)
 
@@ -331,7 +372,7 @@ def get_coupon(request, code):
         coupon = Coupon.objects.get(code=code)
         return coupon
     except ObjectDoesNotExist:
-        messages.info(request, "This coupon does not exist")
+        messages.info(request, "Este cupón no existe.")
         return redirect("core:checkout")
 
 
@@ -345,11 +386,11 @@ class AddCouponView(View):
                     user=self.request.user, ordered=False)
                 order.coupon = get_coupon(self.request, code)
                 order.save()
-                messages.success(self.request, "Successfully added coupon")
+                messages.success(self.request, "Cupón aplicado con éxito.")
                 return redirect("core:checkout")
 
             except ObjectDoesNotExist:
-                messages.info(self.request, "You do not have an active order")
+                messages.info(self.request, "No tienes ninguna orden activa.")
                 return redirect("core:checkout")
 
 
@@ -380,9 +421,9 @@ class RequestRefundView(View):
                 refund.email = email
                 refund.save()
 
-                messages.info(self.request, "Your request was received")
+                messages.info(self.request, "Tu petición ha sido recibida.")
                 return redirect("core:request-refund")
 
             except ObjectDoesNotExist:
-                messages.info(self.request, "This order does not exist")
+                messages.info(self.request, "Esta orden no existe.")
                 return redirect("core:request-refund")

@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for order_item in object.items.all %}
+          {% for order_item in cart.items.all %}
           <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td>
@@ -44,20 +44,20 @@
           </tr>
           {% empty %}
           <tr>
-			<td colspan="5">Your cart is empty</td>
+			<td colspan="5">Tu carrito está vacío</td>
           </tr>
         </tbody>
         {% endfor %}
-        {% if object.coupon %}
+        {% if cart.coupon %}
         <tr>
           <td colspan="5"><b>Coupon : </b></td>
-          <td>- ${{ object.coupon.amount }}</td>
+          <td>- ${{ cart.coupon.amount }}</td>
         </tr>
         {% endif%}
-        {% if object.get_total %}
+        {% if cart.get_total %}
         <tr>
         	<td colspan="5"><b>Order Total : </b></td>
-        	<td><b>${{ object.get_total }}</b></td>
+        	<td><b>{{ cart.get_total }} €</b></td>
         </tr>
         <tr>
         	<td colspan="5">

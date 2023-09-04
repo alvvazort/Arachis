@@ -4,13 +4,6 @@ from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
 
-# Create your models here.
-CATEGORY_CHOICES = (
-    ('SB', 'Shirts And Blouses'),
-    ('TS', 'T-Shirts'),
-    ('SK', 'Skirts'),
-    ('HS', 'Hoodies&Sweatshirts')
-)
 
 LABEL_CHOICES = (
     ('S', 'sale'),
@@ -153,10 +146,11 @@ class Order(models.Model):
 class BillingAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    street_address = models.CharField(max_length=100)
-    apartment_address = models.CharField(max_length=100)
+    street_address = models.CharField(max_length=100, verbose_name="Dirección", blank=False)
+    apartment_address = models.CharField(max_length=100, verbose_name="Dirección 2", blank=True, null=True)
     country = CountryField(multiple=False)
-    zip = models.CharField(max_length=100)
+    city = models.CharField(max_length=100, verbose_name="Ciudad", blank=False, null=False)
+    zip = models.CharField(max_length=10, verbose_name="Código Postal", blank=False, null=False)
     address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
     default = models.BooleanField(default=False)
 
