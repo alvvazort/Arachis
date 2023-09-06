@@ -130,7 +130,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
             }
             return render(self.request, 'order_summary.html', context)
         except ObjectDoesNotExist:
-            messages.error(self.request, "You do not have an active order")
+            messages.error(self.request, "No tienes ningún pedido abierto")
             return redirect("/")
 
 
@@ -215,7 +215,7 @@ class CheckoutView(View):
             return render(self.request, "checkout.html", context)
 
         except ObjectDoesNotExist:
-            messages.info(self.request, "You do not have an active order")
+            messages.info(self.request, "No tienes ningún pedido abierto")
             return redirect("core:checkout")
 
     def post(self, *args, **kwargs):
@@ -230,21 +230,43 @@ class CheckoutView(View):
                 city = form.cleaned_data.get('city')
                 zip = form.cleaned_data.get('zip')
                 # add functionality for these fields
-                # same_shipping_address = form.cleaned_data.get(
-                #     'same_shipping_address')
+                same_shipping_address = form.cleaned_data.get(
+                     'same_shipping_address')
                 # save_info = form.cleaned_data.get('save_info')
                 # payment_option = form.cleaned_data.get('payment_option')
-
-                billing_address = BillingAddress(
+                shipping_address = BillingAddress(
                     user=self.request.user,
                     street_address=street_address,
                     apartment_address=apartment_address,
                     country=country,
                     city=city,
                     zip=zip,
-                    address_type='B'
+                    address_type='S'
                 )
+                if same_shipping_address:
+                    billing_address = BillingAddress(
+                        user=self.request.user,
+                        street_address=street_address,
+                        apartment_address=apartment_address,
+                        country=country,
+                        city=city,
+                        zip=zip,
+                        address_type='B'
+                    )
+                else:
+                    # Set the attributes of the form to the billing address
+                    billing_address = BillingAddress(
+                        user=self.request.user,
+                        street_address=street_address,
+                        apartment_address=apartment_address,
+                        country=country,
+                        city=city,
+                        zip=zip,
+                        address_type='B'
+                    )
+                shipping_address.save()
                 billing_address.save()
+                order.shipping_address = shipping_address
                 order.billing_address = billing_address
                 order.save()
 
@@ -262,7 +284,7 @@ class CheckoutView(View):
                     return redirect('core:checkout')
                 '''
         except ObjectDoesNotExist:
-            messages.error(self.request, "You do not have an active order")
+            messages.error(self.request, "No tienes ningún pedido abierto")
             return redirect("core:order-summary")
 
 

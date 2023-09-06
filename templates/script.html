@@ -55,7 +55,9 @@
   src="{% static 'vendor/sweetalert/sweetalert.min.js' %}"
 ></script>
 <script type="text/javascript">
+  
   $(".block2-btn-addcart").each(function() {
+    const url = $(this).attr('url');
     var nameProduct = $(this)
       .parent()
       .parent()
@@ -63,8 +65,23 @@
       .find(".block2-name")
       .html();
     $(this).on("click", function() {
-      swal(nameProduct, "is added to cart !", "success");
+      swal(nameProduct, "Añadido al carrito!", "success");
+      $.ajax({
+        url: url,
+        type: "GET",
+        
+      success: function(data) {
+        $(".swal-button-container").on("click", function() {
+          // Refrescar la página
+          location.reload();
+        });
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        // Manejar errores aquí
+      }
+      });
     });
+    
   });
 </script>
 

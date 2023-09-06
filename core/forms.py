@@ -30,12 +30,36 @@ class CheckoutForm(forms.Form):
     zip = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control'
     }))
-    same_shipping_address = forms.BooleanField(required=False)
+    same_shipping_address = forms.BooleanField(widget=forms.CheckboxInput(attrs={
+        'class': 'custom-checkbox'
+    }), required=False, label="La dirección de facturación es la misma que la de entrega")
+    same_shipping_address.initial = True
     save_info = forms.BooleanField(required=False)
     '''
     payment_option = forms.ChoiceField(
         widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
     '''
+
+    street_address_billing = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'C/ Amor de Dios 123',
+        'class': 'form-control'
+    }))
+    apartment_address_billing = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'placeholder': 'Apartamento 123',
+        'class': 'form-control'
+    }))
+    country_billing = CountryField(blank_label='(Selecciona un pais)').formfield(widget=CountrySelectWidget(attrs={
+        'class': 'custom-select d-block w-100'
+    }))
+    country_billing.initial = 'ES'
+    country_billing.disabled = True
+    city_billing = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control'
+    }))
+    zip_billing = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control'
+    }))
+
 
 class CouponForm(forms.Form):
     code = forms.CharField(widget=forms.TextInput(attrs={

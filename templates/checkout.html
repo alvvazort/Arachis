@@ -101,16 +101,16 @@
           </div>
         </div>
         <hr class="mb-4">
-        <div class="custom-control custom-checkbox">
-          <input {% if form.same_shipping_address.value %}checked{% endif %} type="checkbox" class="custom-control-input" id="same_shipping_address">
-          
-          <label class="custom-control-label" for="same_shipping_address">La dirección de facturación es la misma que la de entrega</label>
-        </div>
+        {{ form.same_shipping_address }}
+        <label  for="same_shipping_address">La dirección de facturación es la misma que la de entrega </label>
+
+        <!--
         <div class="custom-control custom-checkbox">
           <input {% if form.save_info.value %}checked{% endif %} type="checkbox" class="custom-control-input" id="save-info">
           
           <label class="custom-control-label" for="save-info">Guardar esta información para la próxima vez</label>
         </div>
+        -->
         <!--
         <hr class="mb-4">
 
@@ -125,7 +125,54 @@
           {% endfor %}
         </div>
         -->
-       
+        <!-- FORMULARIO BILLING -->
+        <hr id="linea-billing" class="mb-4 hidden billing">
+        <div class="mb-3 hidden billing">
+          <label for="address">Dirección</label>
+          {{ form.street_address_billing }}
+        </div>
+
+        <div class="mb-3 hidden billing">
+          <label for="address2">2ª Dirección <span class="text-muted">(Opcional)</span></label>
+          {{ form.apartment_address_billing }}
+        </div>
+
+        <div class="row hidden billing">
+          <div class="col-md-5 mb-3">
+            <label for="country">Pais</label>
+           		{{ form.country_billing }}
+            <div class="invalid-feedback">
+              Por favor selecciona un pais valido.
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <!--
+            <label for="state">Ciudad</label>
+            <select class="custom-select d-block w-100" id="state" required>
+              <option value="">Elige tu ciudad</option>
+              <option>California</option>
+              <option>Yangon</option>
+
+            </select>
+            
+            <div class="invalid-feedback">
+              Please provide a valid city.
+            </div>
+            -->
+            <label for="city">Ciudad</label>
+              {{ form.city_billing }}
+            <div class="invalid-feedback">
+              Please provide a valid city.
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="zip">Código postal</label>
+            {{ form.zip_billing }}
+            <div class="invalid-feedback">
+              El código postal es obligatorio.
+            </div>
+          </div>
+        </div>
         <hr class="mb-4">
         <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
       </form>
@@ -144,4 +191,35 @@
     </ul>
   </footer>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    $(document).ready(function () {
+        const checkbox = $("#id_same_shipping_address");
+        const street = $("#id_street_address_billing");
+        const apartment = $("#id_apartment_address_billing");
+        const country = $("#id_country_billing");
+
+        // Función para actualizar la visibilidad y el requerimiento de los campos adicionales
+        function actualizarCamposAdicionales() {
+          
+          if (checkbox.is(":checked")) {
+            $(".billing").addClass("hidden");
+            street.removeAttr('required');
+            apartment.removeAttr('required');
+          } else {
+            $(".billing").removeClass("hidden");
+            street.attr('required', 'required');
+            apartment.attr('required', 'required');
+          }
+        }
+
+        // Llamar a la función una vez al cargar la página para inicializar el estado
+        actualizarCamposAdicionales();
+
+        // Agregar un evento change al checkbox para actualizar los campos cuando cambie
+        checkbox.change(actualizarCamposAdicionales);
+    });
+  });
+</script>
+
 {% endblock content %}
