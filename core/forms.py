@@ -11,7 +11,7 @@ PAYMENT_CHOICES = (
 
 
 class CheckoutForm(forms.Form):
-    street_address = forms.CharField(widget=forms.TextInput(attrs={
+    street_address = forms.CharField(required=True ,widget=forms.TextInput(attrs={
         'placeholder': 'C/ Amor de Dios 123',
         'class': 'form-control'
     }))
@@ -24,23 +24,23 @@ class CheckoutForm(forms.Form):
     }))
     country.initial = 'ES'
     country.disabled = True
-    city = forms.CharField(widget=forms.TextInput(attrs={
+    city = forms.CharField(required=True, widget=forms.TextInput(attrs={
         'class': 'form-control'
     }))
-    zip = forms.CharField(widget=forms.TextInput(attrs={
+    zip = forms.CharField(required=True, widget=forms.TextInput(attrs={
         'class': 'form-control'
     }))
     same_shipping_address = forms.BooleanField(widget=forms.CheckboxInput(attrs={
         'class': 'custom-checkbox'
     }), required=False, label="La dirección de facturación es la misma que la de entrega")
     same_shipping_address.initial = True
-    save_info = forms.BooleanField(required=False)
+    #save_info = forms.BooleanField(required=False)
     '''
     payment_option = forms.ChoiceField(
         widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
     '''
 
-    street_address_billing = forms.CharField(widget=forms.TextInput(attrs={
+    street_address_billing = forms.CharField(required=False,widget=forms.TextInput(attrs={
         'placeholder': 'C/ Amor de Dios 123',
         'class': 'form-control'
     }))
@@ -53,10 +53,10 @@ class CheckoutForm(forms.Form):
     }))
     country_billing.initial = 'ES'
     country_billing.disabled = True
-    city_billing = forms.CharField(widget=forms.TextInput(attrs={
+    city_billing = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'form-control'
     }))
-    zip_billing = forms.CharField(widget=forms.TextInput(attrs={
+    zip_billing = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'form-control'
     }))
 

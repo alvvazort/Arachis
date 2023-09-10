@@ -243,6 +243,7 @@ class CheckoutView(View):
                     zip=zip,
                     address_type='S'
                 )
+                
                 if same_shipping_address:
                     billing_address = BillingAddress(
                         user=self.request.user,
@@ -254,14 +255,19 @@ class CheckoutView(View):
                         address_type='B'
                     )
                 else:
+                    street_address_billing = form.cleaned_data.get('street_address_billing')
+                    apartment_address_billing = form.cleaned_data.get('apartment_address_billing')
+                    country_billing = form.cleaned_data.get('country_billing')
+                    city_billing = form.cleaned_data.get('city_billing')
+                    zip_billing = form.cleaned_data.get('zip_billing')
                     # Set the attributes of the form to the billing address
                     billing_address = BillingAddress(
                         user=self.request.user,
-                        street_address=street_address,
-                        apartment_address=apartment_address,
-                        country=country,
-                        city=city,
-                        zip=zip,
+                        street_address=street_address_billing,
+                        apartment_address=apartment_address_billing,
+                        country=country_billing,
+                        city=city_billing,
+                        zip=zip_billing,
                         address_type='B'
                     )
                 shipping_address.save()

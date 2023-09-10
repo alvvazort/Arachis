@@ -52,7 +52,7 @@
     <div class="col-md-8 order-md-1 card" >
     	
       <h4 class="mb-3" style=" margin-top: 26px;">Dirección de entrega</h4>
-      <form method="POST" class="needs-validation" novalidate>
+      <form method="POST" class="needs-validation" >
       	{% csrf_token %}
         <div class="mb-3">
           <label for="address">Dirección</label>
@@ -198,6 +198,8 @@
         const street = $("#id_street_address_billing");
         const apartment = $("#id_apartment_address_billing");
         const country = $("#id_country_billing");
+        const city = $("#id_city_billing");
+        const zip = $("#id_zip_billing");
 
         // Función para actualizar la visibilidad y el requerimiento de los campos adicionales
         function actualizarCamposAdicionales() {
@@ -206,10 +208,14 @@
             $(".billing").addClass("hidden");
             street.removeAttr('required');
             apartment.removeAttr('required');
+            city.removeAttr('required');
+            zip.removeAttr('required');
           } else {
             $(".billing").removeClass("hidden");
             street.attr('required', 'required');
             apartment.attr('required', 'required');
+            city.attr('required', 'required');
+            zip.attr('required', 'required');
           }
         }
 
