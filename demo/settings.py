@@ -74,8 +74,8 @@ DATABASES = {
 }
 
 if ENVIRONMENT == 'production':
-    DEBUG = True
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    DEBUG = False
+    SECRET_KEY = "g7rh+3xp9-vj)nx6%fde=y&2x1#vkp52002b)d!kcz&=9isykc"
     SESSION_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -84,6 +84,7 @@ if ENVIRONMENT == 'production':
     SECURE_REDIRECT_EXEMPT = []
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    ALLOWED_HOSTS = []
 
 # Auth
 AUTHENTICATION_BACKENDS = (
