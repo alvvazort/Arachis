@@ -9,6 +9,15 @@ PAYMENT_CHOICES = (
     ('P', 'PayPal')
 )
 
+class Login(forms.Form):
+    username = forms.CharField(required=True, widget=forms.TextInput(attrs={
+        'placeholder': 'Usuario',
+        'class': 'form-control'
+    }))
+    password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={
+        'placeholder': 'Contraseña',
+        'class': 'form-control'
+    }))
 
 class CheckoutForm(forms.Form):
     street_address = forms.CharField(required=True ,widget=forms.TextInput(attrs={
@@ -64,7 +73,7 @@ class CheckoutForm(forms.Form):
 class CouponForm(forms.Form):
     code = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
-        'placeholder': 'Promo code'
+        'placeholder': 'Código promocional',
     }))
 
 

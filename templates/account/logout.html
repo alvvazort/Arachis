@@ -1,5 +1,5 @@
 {% extends "account/base.html" %} {% load i18n %} {% block head_title %}{% trans
-"Sign Out" %}{% endblock %} {% block content %}
+"Cerrar sesión" %}{% endblock %} {% block content %}
 
 <style type="text/css">
   input {
@@ -14,9 +14,9 @@
   <div class="row">
 
     <div class="col-md-6 mt-5 offset-3">
-<h1>{% trans "Sign Out" %}</h1>
+<h1>{% trans "Cerrar sesión" %}</h1>
 
-<p>{% trans 'Are you sure you want to sign out?' %}</p>
+<p>{% trans '¿Estás seguro de que quieras cerrar la sesión?' %}</p>
 
 <form method="post" action="{% url 'account_logout' %}">
   {% csrf_token %} {% if redirect_field_value %}
@@ -26,8 +26,17 @@
     value="{{ redirect_field_value }}"
   />
   {% endif %}
-  <button type="submit" class="btn btn-primary">{% trans 'Sign Out' %}</button>
+  <button type="submit" class="btn btn-primary">{% trans 'Cerrar sesión' %}</button>
 </form>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 </div>
 </div>
 </div>

@@ -39,7 +39,7 @@
 							
 							{% if request.user.is_authenticated %}
 							<li>
-								<a href="{% url 'account_logout' %}">Logout</a>
+								<a href="{% url 'account_logout' %}">Cerrar sesión</a>
 							</li>
 							{% else %}
 							<li>
@@ -106,7 +106,7 @@
 
 								<div class="header-cart-wrapbtn">
 									<!-- Button -->
-									<a href="#" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
+									<a href="/checkout/" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
 										Comprar
 									</a>
 								</div>
@@ -182,7 +182,7 @@
 					{% categories_mobile %}
 					{% if request.user.is_authenticated %}
 					<li class="item-menu-mobile">
-						<a href="{% url 'account_logout' %}">Logout</a>
+						<a href="{% url 'account_logout' %}">Cerrar sesión</a>
 					</li>
 					{% else %}
 					<li class="item-menu-mobile">

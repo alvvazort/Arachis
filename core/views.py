@@ -7,10 +7,13 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
+
+from core.utils import handle_checkout_session
 from .forms import CheckoutForm, CouponForm, RefundForm
 from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 import random
@@ -41,12 +44,14 @@ class PaymentView(View):
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
-        amount = int(order.get_total() * 100)
+        amount = int(order.get_total() * 100) # cents
+
         try:
             charge = stripe.Charge.create(
                 amount=amount,  # cents
                 currency="eur",
-                source=token
+                source=token,
+                metadata={'user': self.request.user.id}
             )
             # create the payment
             payment = Payment()
@@ -56,13 +61,12 @@ class PaymentView(View):
             payment.save()
 
             # assign the payment to the order
-            order.ordered = True
             order.payment = payment
             # TODO : assign ref code
             order.ref_code = create_ref_code()
             order.save()
 
-            messages.success(self.request, "Order was successful")
+            messages.success(self.request, "Pago realizado correctamente.")
             return redirect("/")
 
         except stripe.error.CardError as e:
@@ -79,6 +83,7 @@ class PaymentView(View):
 
         except stripe.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
+            print(e)
             messages.error(self.request, "Invalid parameters")
             return redirect("/")
 
@@ -378,6 +383,30 @@ def remove_from_cart(request, slug):
         return redirect("core:product", slug=slug)
     return redirect("core:product", slug=slug)
 
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+    endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        print(e)
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        print(e)
+        return HttpResponse(status=400)
+    # Handle the checkout.session.completed event
+    if event['type'] == 'charge.succeeded':
+        session = event['data']['object']
+        # Fulfill the purchase...
+        handle_checkout_session(session)
+    # Passed signature verification
+    return HttpResponse(status=200)
 
 @login_required
 def remove_single_item_from_cart(request, slug):
