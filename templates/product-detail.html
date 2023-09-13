@@ -32,7 +32,7 @@
 								<img src="{{ object.image.url }}" alt="{{ object.title }}">
 							</div>
 						</div>
-
+						<!--
 						<div class="item-slick3" data-thumb="{% static 'images/product-detail2.jpg' %}">
 							<div class="wrap-pic-w">
 								<img src="{% static 'images/product-detail2.jpg' %}" alt="IMG-PRODUCT">
@@ -44,6 +44,7 @@
 								<img src="{% static 'images/product-detail3.jpg' %}" alt="IMG-PRODUCT">
 							</div>
 						</div>
+						-->
 					</div>
 				</div>
 			</div>
@@ -140,8 +141,8 @@
 				</div>
 				<br>
 				<div class="p-b-45">
-					<span class="s-text8 m-r-35">SKU: {{ object.stock_no }}</span>
-					<span class="s-text8">Categories: {{ object.category }}</span>
+					<span class="s-text8 m-r-35">Stock: {{ object.stock_no }}</span>
+					<span class="s-text8">Categoría: {{ object.category }}</span>
 				</div>
 
 				<!--  -->

@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 from core.utils import handle_checkout_session
-from .forms import CheckoutForm, CouponForm, RefundForm
+from .forms import CheckoutForm, CouponForm, EditProfileForm, RefundForm
 from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -25,6 +25,19 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
+@login_required
+def profile(request):
+    user = request.user
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            # Procesa y actualiza los datos del usuario aquí
+            user.username = form.cleaned_data['username']
+            user.email = form.cleaned_data['email']
+    else:
+        form = EditProfileForm(initial={'username': user.username, 'email': user.email})
+
+    return render(request, 'profile.html', {'form': form})
 
 class PaymentView(View):
     def get(self, *args, **kwargs):

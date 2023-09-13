@@ -12,7 +12,8 @@ from .views import (
     AddCouponView,
     RequestRefundView,
     CategoryView,
-    stripe_webhook
+    stripe_webhook,
+    profile
 )
 
 app_name = 'core'
@@ -31,5 +32,6 @@ urlpatterns = [
          name='remove-single-item-from-cart'),
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund'),
-    path('stripe-webhook/', stripe_webhook, name='stripe-webhook')
+    path('stripe-webhook/', stripe_webhook, name='stripe-webhook'),
+    path('profile/', profile, name='profile')
 ]

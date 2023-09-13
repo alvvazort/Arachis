@@ -9,13 +9,13 @@ PAYMENT_CHOICES = (
     ('P', 'PayPal')
 )
 
-class Login(forms.Form):
+class EditProfileForm(forms.Form):
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={
-        'placeholder': 'Usuario',
+        'placeholder': 'Nombre de usuario',
         'class': 'form-control'
     }))
-    password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={
-        'placeholder': 'Contraseña',
+    email = forms.EmailField(required=True, widget=forms.TextInput(attrs={
+        'placeholder': 'Correo electrónico',
         'class': 'form-control'
     }))
 
