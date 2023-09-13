@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from core.utils import handle_checkout_session
 from .forms import CheckoutForm, CouponForm, EditProfileForm, RefundForm
-from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category
+from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category, ShippingCost
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
@@ -145,7 +145,8 @@ class OrderSummaryView(LoginRequiredMixin, View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False) 
             context = {
-                'cart': order
+                'cart': order,
+                'shipping_cost': ShippingCost.get_instance()
             }
             return render(self.request, 'order_summary.html', context)
         except ObjectDoesNotExist:
@@ -229,7 +230,8 @@ class CheckoutView(View):
                 'form': form,
                 'couponform': CouponForm(),
                 'cart': order,
-                'DISPLAY_COUPON_FORM': True
+                'DISPLAY_COUPON_FORM': True,
+                'shipping_cost': ShippingCost.get_instance()
             }
             return render(self.request, "checkout.html", context)
 

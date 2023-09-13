@@ -50,13 +50,19 @@
         {% endfor %}
         {% if cart.coupon %}
         <tr>
-          <td colspan="5"><b>Coupon : </b></td>
+          <td colspan="5"><b>Cupón: </b></td>
           <td>-{{ cart.coupon.amount }} €</td>
+        </tr>
+        {% endif%}
+        {% if shipping_cost %}
+        <tr>
+          <td colspan="5"><b>Gastos de envío: </b></td>
+          <td>-{{ shipping_cost }} €</td>
         </tr>
         {% endif%}
         {% if cart.get_total %}
         <tr>
-        	<td colspan="5"><b>Order Total : </b></td>
+        	<td colspan="5"><b>Total del pedido: </b></td>
         	<td><b>{{ cart.get_total }} €</b></td>
         </tr>
         <tr>

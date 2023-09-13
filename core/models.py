@@ -99,6 +99,28 @@ class OrderItem(models.Model):
             return self.get_total_discount_item_price()
         return self.get_total_item_price()
 
+class ShippingCost(models.Model):
+    cost = models.FloatField()
+
+    def __str__(self):
+        return str(self.cost)
+    
+    @classmethod
+    def get_instance(cls):
+        # Attempt to get an existing instance
+        instance, created = cls.objects.get_or_create(pk=1)
+
+        if created:
+            # If a new instance was created, set the default cost
+            instance.cost = 0.0
+            instance.save()
+
+        return instance
+
+    def save(self, *args, **kwargs):
+        # Ensure that only one instance can be saved
+        self.pk = 1
+        super(ShippingCost, self).save(*args, **kwargs)
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -140,6 +162,8 @@ class Order(models.Model):
             total += order_item.get_final_price()
         if self.coupon:
             total -= self.coupon.amount
+        if ShippingCost.get_instance():
+            total += ShippingCost.get_instance().cost
         return total
 
 
