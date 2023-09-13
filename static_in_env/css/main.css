@@ -1112,7 +1112,7 @@ li.sale-noti > a {
 
 .side-menu .sub-menu > li {
   padding-left: 12px;
-  padding-top: 
+  padding-top: 0px; /* Estaba vacío */
 }
 
 .side-menu .sub-menu a:hover {

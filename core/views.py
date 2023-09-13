@@ -28,6 +28,7 @@ def create_ref_code():
 @login_required
 def profile(request):
     user = request.user
+    orders = Order.objects.filter(user=user, ordered=True)
     if request.method == 'POST':
         form = EditProfileForm(request.POST)
         if form.is_valid():
@@ -37,7 +38,7 @@ def profile(request):
     else:
         form = EditProfileForm(initial={'username': user.username, 'email': user.email})
 
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile.html', {'form': form, 'orders': orders})
 
 class PaymentView(View):
     def get(self, *args, **kwargs):
