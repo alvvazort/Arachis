@@ -3,7 +3,11 @@ from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
-
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 LABEL_CHOICES = (
     ('S', 'sale'),
@@ -165,7 +169,24 @@ class Order(models.Model):
         if ShippingCost.get_instance():
             total += ShippingCost.get_instance().cost
         return total
+    
+@receiver(post_save, sender=Order)
+def being_delivered(sender, instance, **kwargs):
+    if instance.being_delivered:
+        send_shipping_confirmed_mail(instance.user.email, instance)
 
+def send_shipping_confirmed_mail(email, order):
+    subject = 'Su pedido ha sido enviado'
+    #message = 'Tu pedido ha sido confirmado!\n \n  El pedido será enviado por correo y usted será informado de su seguimiento. \n \n Gracias por comprar en Arachis.'
+    email_template = 'confirmation_shipping_mail.html'
+    html_message = render_to_string(email_template, {'user': order.user,'order': order})
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = [email]
+
+    # Crear una versión de texto sin formato del mensaje (para clientes de correo que no admiten HTML)
+    plain_message = strip_tags(html_message)
+
+    send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
 
 class BillingAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,

@@ -47,7 +47,9 @@ class PaymentView(View):
         if order.billing_address:
             context = {
                 'order': order,
-                'DISPLAY_COUPON_FORM': False
+                'DISPLAY_COUPON_FORM': False,
+                'cart': order,
+                'shipping_cost': ShippingCost.get_instance(),
             }
             return render(self.request, "payment.html", context)
         else:
